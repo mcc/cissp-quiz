@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CISSP Quiz App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* Light theme variables */
+            --bg-color: #f4f6f8;
+            --container-bg: white;
+            --text-color: #333;
+            --header-color: #2c3e50;
+            --border-color: #ddd;
+            --shadow-color: rgba(0,0,0,0.1);
+            --error-color: #c0392b;
+            --correct-color: #27ae60;
+            --incorrect-color: #c0392b;
+            --button-bg: #3498db;
+            --button-hover: #2980b9;
+            --danger-bg: #e74c3c;
+            --danger-hover: #c0392b;
+            --meta-color: #666;
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme variables */
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --header-color: #ffffff;
+            --border-color: #444;
+            --shadow-color: rgba(255,255,255,0.1);
+            --error-color: #ff6b6b;
+            --correct-color: #2ecc71;
+            --incorrect-color: #ff4757;
+            --button-bg: #4dabf7;
+            --button-hover: #3398db;
+            --danger-bg: #ff6b6b;
+            --danger-hover: #ff4757;
+            --meta-color: #b0b0b0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 1rem;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            background: var(--container-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: background 0.3s;
+        }
+
+        h1, h2, h3 {
+            color: var(--header-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+        }
+
+        h2 {
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+        }
+
+        h3 {
+            font-size: clamp(1rem, 3.5vw, 1.25rem);
+        }
+
+        .question-container {
+            margin: 1rem 0;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .correct {
+            color: var(--correct-color);
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: var(--incorrect-color);
+            font-weight: bold;
+        }
+
+        button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0.5rem 0.25rem;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            width: auto;
+            display: inline-block;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        button.danger {
+            background-color: var(--danger-bg);
+        }
+
+        button.danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        input[type="file"], input[type="number"], input[type="text"], input[type="password"], select, textarea {
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 100%;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s, background 0.3s, color 0.3s;
+        }
+
+        label {
+            display: block;
+            margin: 0.5rem 0 0.25rem;
+            font-weight: bold;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .error {
+            color: var(--error-color);
+            font-style: italic;
+            margin: 0.5rem 0;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+
+        #options div {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        #options input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+
+        .options-list {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .options-list li {
+            margin: 0.25rem 0;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .question-meta {
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: var(--meta-color);
+            margin-top: 0.5rem;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        #theme-toggle {
+            margin: 0.5rem 0;
+        }
+
+        #question-count {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: var(--meta-color);
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            button {
+                width: 100%;
+                padding: 0.75rem;
+            }
+
+            input[type="file"], input[type="number"], input[type="text"], input[type="password"], select, textarea {
+                margin: 0.25rem 0;
+            }
+
+            label {
+                margin: 0.25rem 0 0.1rem;
+            }
+
+            #start-screen div, #admin-screen div, #edit-questions-screen div {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            #theme-toggle {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 601px) {
+            #start-screen div, #admin-screen div, #edit-questions-screen div {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                align-items: start;
+            }
+
+            button {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen">
+            <h1>CISSP Quiz App</h1>
+            <label>Password:
+                <input type="password" id="app-password" placeholder="Enter app password">
+            </label>
+            <div id="password-error" class="error hidden"></div>
+            <div>
+                <label>Name:
+                    <input type="text" id="user-name" placeholder="Enter your name">
+                </label>
+                <label>Remark:
+                    <input type="text" id="user-remark" placeholder="Enter a remark">
+                </label>
+                <label>Number of Questions:
+                    <input type="number" id="num-questions" min="1">
+                </label>
+                <label>Question Range (e.g., 1-20):
+                    <input type="text" id="question-range" placeholder="Optional range (e.g., 1-20)">
+                </label>
+                <label>Domain:
+                    <select id="domain-select" onchange="updateQuestionCount()"></select>
+                </label>
+                <label>Source:
+                    <select id="source-select" onchange="updateQuestionCount()"></select>
+                </label>
+                <label>
+                    <input type="checkbox" id="randomize-questions"> Randomize Questions
+                </label>
+                <button onclick="startQuiz()">Start Quiz</button>
+            </div>
+            <div id="question-count"></div>
+            <button onclick="showHistory()">Show Quiz History</button>
+            <button onclick="showAdmin()">Administration</button>
+            <button onclick="showMarkedQuestions()">Review Marked Questions</button>
+            <button id="theme-toggle" onclick="toggleTheme()">Toggle Dark Theme</button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <h2>Question <span id="question-num"></span></h2>
+            <div id="question-text"></div>
+            <div id="options"></div>
+            <label>
+                <input type="checkbox" id="mark-for-review"> Mark for Review
+            </label>
+            <label>Notes:
+                <textarea id="question-notes" placeholder="Enter notes for this question"></textarea>
+            </label>
+            <button onclick="submitAnswer()">Submit</button>
+        </div>
+
+        <div id="results-screen" class="hidden">
+            <h2>Quiz Results</h2>
+            <div id="results"></div>
+            <button onclick="showStartScreen()">New Quiz</button>
+        </div>
+
+        <div id="history-screen" class="hidden">
+            <h2>Quiz History</h2>
+            <div id="quiz-history"></div>
+            <button onclick="showStartScreen()">Back</button>
+        </div>
+
+        <div id="admin-screen" class="hidden">
+            <h2>Administration</h2>
+            <input type="file" id="import-json" accept=".json">
+            <button onclick="importQuestions()">Import Questions</button>
+            <div id="admin-error" class="error hidden"></div>
+            <div>
+                <label>Remove Questions by Source:
+                    <select id="admin-source-select"></select>
+                    <button class="danger" onclick="removeSource()">Remove Source</button>
+                </label>
+            </div>
+            <div>
+                <button class="danger" onclick="removeHistory()">Remove All Quiz History</button>
+            </div>
+            <div>
+                <label>Edit/Delete Questions by Source:
+                    <select id="edit-source-select"></select>
+                    <button onclick="showEditQuestions()">Edit Questions</button>
+                </label>
+            </div>
+            <button onclick="showStartScreen()">Back</button>
+        </div>
+
+        <div id="edit-questions-screen" class="hidden">
+            <h2>Edit Questions</h2>
+            <div id="edit-questions-list"></div>
+            <button onclick="showAdmin()">Back</button>
+        </div>
+
+        <div id="marked-questions-screen" class="hidden">
+            <h2>Marked Questions for Review</h2>
+            <div id="marked-questions-list"></div>
+            <button onclick="showStartScreen()">Back</button>
+        </div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

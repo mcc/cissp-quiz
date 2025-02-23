@@ -1,0 +1,17 @@
+name = "cissp-quiz-page"
+compatibility_date = "2025-02-19"
+pages_build_output_dir = "public"  # Directory containing static assets
+
+
+#[[kv_namespaces]]
+#binding = "QUIZ_DATA"
+#id = "c4dba149ffab494f9b6ea0c4a6a2a71f"
+
+[vars]
+#KV_NAMESPACE = "QUIZ_DATA"
+ADMIN_PASSWORD = "password"
+
+[[d1_databases]]
+binding = "QUIZ_DB"
+database_name = "cissp-quiz-db"
+database_id = "68262919-4e88-4087-922c-16137252d880"
